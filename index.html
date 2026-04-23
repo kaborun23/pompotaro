@@ -241,7 +241,6 @@ tr.hl td{background:rgba(255,102,0,0.18);font-weight:bold}
       <div class="card-label"><span class="badge">Q</span>筒先流量（ℓ/min）</div>
       <div class="preset-row">
         <button class="preset-btn active" id="pq0" onclick="setFlowPreset(360,'pq0')">クアドラ<br>360</button>
-        <button class="preset-btn" id="pq1" onclick="setFlowPreset(120,'pq1')">ﾊｲﾊﾟﾜｰ<br>120</button>
         <button class="preset-btn" id="pq2" onclick="setFlowPreset(null,'pq2')">手動</button>
       </div>
       <div class="pressure-row" style="margin-top:10px">
@@ -278,7 +277,6 @@ tr.hl td{background:rgba(255,102,0,0.18);font-weight:bold}
     <div class="card-label"><span class="badge">Q</span>放水量（ℓ/min）</div>
     <div class="preset-row">
       <button class="preset-btn active" id="lq0" onclick="setLossQPreset(360,'lq0')">クアドラ<br>360</button>
-      <button class="preset-btn" id="lq1" onclick="setLossQPreset(120,'lq1')">ﾊｲﾊﾟﾜｰ<br>120</button>
       <button class="preset-btn" id="lq2" onclick="setLossQPreset(null,'lq2')">手動</button>
     </div>
     <div class="pressure-row" style="margin-top:10px">
@@ -644,7 +642,7 @@ function adj(type, delta) {
 let coolOn = false;
 
 function setFlowPreset(val, id) {
-  document.querySelectorAll('#pq0,#pq1,#pq2').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#pq0,#pq2').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (val !== null) {
     document.getElementById('qFlow').value = val;
@@ -766,7 +764,7 @@ function adjLossQ(delta) {
 }
 
 function setLossQPreset(val, id) {
-  document.querySelectorAll('#lq0,#lq1,#lq2').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#lq0,#lq2').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (val !== null) {
     document.getElementById('lQ').value = val;
