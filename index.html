@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>ポンプ太郎</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1a2a4a">
@@ -24,7 +24,11 @@
   --ora:   #ff9900;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--txt);font-family:'Arial',sans-serif;min-height:100vh;max-width:540px;margin:0 auto}
+body{background:var(--bg);color:var(--txt);font-family:'Arial',sans-serif;min-height:100vh;max-width:540px;margin:0 auto;
+  touch-action:pan-y;overscroll-behavior:none}
+/* タッチ操作の安定化：ボタンのダブルタップ拡大・画面ズレを防止 */
+button,input,select,label,a{touch-action:manipulation}
+input[type=number]{-webkit-appearance:none;appearance:none}
 
 /* Header */
 header{background:var(--bg2);padding:12px 16px 10px;border-bottom:3px solid var(--acc);text-align:center}
