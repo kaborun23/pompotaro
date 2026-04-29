@@ -376,22 +376,11 @@ td.red{color:var(--red)}
   <div class="sec-title">🚒 元ポンプ（中継）設定</div>
 
   <div class="card">
-    <div class="card-label">元ポンプ 送水設定</div>
-    <div class="hose-row" style="padding:4px 0">
-      <div>
-        <span class="hose-label">送水口数</span>
-        <span class="hose-sub">合計Q = <span id="relayQdisp">360</span>ℓ/min</span>
-      </div>
-      <div class="stepper">
-        <button class="step-btn" onclick="adjRelay('ro',-1)">－</button>
-        <span class="step-val" id="hro">1</span>
-        <button class="step-btn" onclick="adjRelay('ro',+1)">＋</button>
-      </div>
-    </div>
+    <div class="card-label">65mm 中継ホース本数</div>
     <div class="hose-row" style="border-bottom:none;padding:4px 0">
       <div>
-        <span class="hose-label">65mm 中継本数</span>
-        <span class="hose-sub">合計Q=<span id="relayQlabel">360</span>ℓ/min</span>
+        <span class="hose-label">65mm</span>
+        <span class="hose-sub">先ポンプ合計Q=<span id="relayQlabel">360</span>ℓ/min</span>
       </div>
       <div class="stepper">
         <button class="step-btn" onclick="adjRelay('r65',-1)">－</button>
@@ -758,10 +747,6 @@ let relayOutlets = 1;  // 元ポンプ計算用 口数
 function adjLossOutlets(delta) {
   lossOutlets = Math.max(1, lossOutlets + delta);
   document.getElementById('lOutlets').textContent = lossOutlets;
-  // 元ポンプ送水口数も自動追従（手動変更した場合はそのまま）
-  relayOutlets = lossOutlets;
-  const hro = document.getElementById('hro');
-  if (hro) hro.textContent = relayOutlets;
   calcLoss();
 }
 
@@ -845,13 +830,10 @@ function calcLoss() {
     '<span><small>50/40mm損失</small><strong>' + (loss50+loss40).toFixed(2) + ' MPa</strong></span>' +
     '<span><small>ノズル圧</small><strong>' + Pnozzle.toFixed(2) + ' MPa</strong></span>';
 
-  // 元ポンプ計算（relayOutletsで独立計算）
-  const relayQtotal_L = Q_L * relayOutlets;
-  const relayQ_m3 = relayQtotal_L / 1000;
-  const relayQdispEl = document.getElementById('relayQdisp');
-  if (relayQdispEl) relayQdispEl.textContent = relayQtotal_L;
+  // 元ポンプ計算（先ポンプ合計Qと同じ値を使用）
+  const relayQ_m3 = senQtotal; // 先ポンプ合計Q（m³/min）をそのまま使用
   const relayLbl = document.getElementById('relayQlabel');
-  if (relayLbl) relayLbl.textContent = relayQtotal_L;
+  if (relayLbl) relayLbl.textContent = senQtotal_L;
 
   const checked = document.querySelector('input[name="margin"]:checked');
   const margin = checked ? parseFloat(checked.value) : 0.10;
@@ -862,7 +844,7 @@ function calcLoss() {
   document.getElementById('relayDetail').innerHTML =
     '<span><small>中継損失</small><strong>' + relayLoss.toFixed(2) + ' MPa</strong></span>' +
     '<span><small>余裕圧</small><strong>' + margin.toFixed(2) + ' MPa</strong></span>' +
-    '<span><small>合計Q</small><strong>' + relayQtotal_L + 'ℓ/min</strong></span>';
+    '<span><small>合計Q</small><strong>' + senQtotal_L + 'ℓ/min</strong></span>';
 }
 
 // PWA Service Worker
