@@ -830,10 +830,11 @@ function calcLoss() {
     '<span><small>50/40mm損失</small><strong>' + (loss50+loss40).toFixed(2) + ' MPa</strong></span>' +
     '<span><small>ノズル圧</small><strong>' + Pnozzle.toFixed(2) + ' MPa</strong></span>';
 
-  // 元ポンプ計算（先ポンプ合計Qと同じ値を使用）
-  const relayQ_m3 = senQtotal; // 先ポンプ合計Q（m³/min）をそのまま使用
+  // 元ポンプ計算（2口上限なし・実際の合計Q使用）
+  const realQtotal_L = Q_L * lossOutlets;
+  const relayQ_m3 = realQtotal_L / 1000;
   const relayLbl = document.getElementById('relayQlabel');
-  if (relayLbl) relayLbl.textContent = senQtotal_L;
+  if (relayLbl) relayLbl.textContent = realQtotal_L;
 
   const checked = document.querySelector('input[name="margin"]:checked');
   const margin = checked ? parseFloat(checked.value) : 0.10;
@@ -844,7 +845,7 @@ function calcLoss() {
   document.getElementById('relayDetail').innerHTML =
     '<span><small>中継損失</small><strong>' + relayLoss.toFixed(2) + ' MPa</strong></span>' +
     '<span><small>余裕圧</small><strong>' + margin.toFixed(2) + ' MPa</strong></span>' +
-    '<span><small>合計Q</small><strong>' + senQtotal_L + 'ℓ/min</strong></span>';
+    '<span><small>合計Q</small><strong>' + realQtotal_L + 'ℓ/min</strong></span>';
 }
 
 // PWA Service Worker
