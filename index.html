@@ -299,6 +299,7 @@ td.red{color:var(--red)}
       <div>
         <span class="hose-label">放水口数</span>
         <span class="hose-sub">合計Q = <span id="lQtotal">360</span>ℓ/min</span>
+        <span id="senCapNote" style="display:none;font-size:11px;color:var(--yel)"></span>
       </div>
       <div class="stepper">
         <button class="step-btn" onclick="adjLossOutlets(-1)">－</button>
@@ -375,10 +376,21 @@ td.red{color:var(--red)}
   <div class="sec-title">🚒 元ポンプ（中継）設定</div>
 
   <div class="card">
-    <div class="card-label">65mm 中継ホース本数</div>
+    <div class="card-label">元ポンプ 送水設定</div>
+    <div class="hose-row" style="padding:4px 0">
+      <div>
+        <span class="hose-label">送水口数</span>
+        <span class="hose-sub">合計Q = <span id="relayQdisp">360</span>ℓ/min</span>
+      </div>
+      <div class="stepper">
+        <button class="step-btn" onclick="adjRelay('ro',-1)">－</button>
+        <span class="step-val" id="hro">1</span>
+        <button class="step-btn" onclick="adjRelay('ro',+1)">＋</button>
+      </div>
+    </div>
     <div class="hose-row" style="border-bottom:none;padding:4px 0">
       <div>
-        <span class="hose-label">65mm</span>
+        <span class="hose-label">65mm 中継本数</span>
         <span class="hose-sub">合計Q=<span id="relayQlabel">360</span>ℓ/min</span>
       </div>
       <div class="stepper">
@@ -746,6 +758,10 @@ let relayOutlets = 1;  // 元ポンプ計算用 口数
 function adjLossOutlets(delta) {
   lossOutlets = Math.max(1, lossOutlets + delta);
   document.getElementById('lOutlets').textContent = lossOutlets;
+  // 元ポンプ送水口数も自動追従（手動変更した場合はそのまま）
+  relayOutlets = lossOutlets;
+  const hro = document.getElementById('hro');
+  if (hro) hro.textContent = relayOutlets;
   calcLoss();
 }
 
@@ -794,19 +810,29 @@ function calcLoss() {
   const Q_L = parseFloat(document.getElementById('lQ').value) || 0;
   const Pnozzle = parseFloat(document.getElementById('lNozzle').value) || 0;
 
-  // 合計流量（65mm幹線用）
-  const Qtotal_L = Q_L * lossOutlets;
-  const Qtotal = Qtotal_L / 1000;
+  // 先ポンプ：3口以上でも最大2口分で計算
+  const senOutlets = Math.min(lossOutlets, 2);
+  const senQtotal_L = Q_L * senOutlets;
+  const senQtotal = senQtotal_L / 1000;
   // 1口あたり流量（50mm/40mm分岐後用）
   const Qbranch = Q_L / 1000;
 
-  document.getElementById('lQtotal').textContent = Qtotal_L;
-  const relayLbl = document.getElementById('relayQlabel');
-  if (relayLbl) relayLbl.textContent = Qtotal_L;
+  // 放水口数表示（実際の合計）
+  document.getElementById('lQtotal').textContent = Q_L * lossOutlets;
+  // 3口以上の場合は先ポンプ上限ノートを表示
+  const capNote = document.getElementById('senCapNote');
+  if (capNote) {
+    if (lossOutlets > 2) {
+      capNote.style.display = 'block';
+      capNote.textContent = '先ポンプ計算: ' + senQtotal_L + 'ℓ/min（2口上限）';
+    } else {
+      capNote.style.display = 'none';
+    }
+  }
 
   // 先ポンプ損失
-  // 65mm：分岐前 → 合計流量で計算
-  const loss65 = HCOEFF[65] * hoseCount[65] * Qtotal * Qtotal;
+  // 65mm：分岐前 → 先ポンプ合計流量（最大2口）で計算
+  const loss65 = HCOEFF[65] * hoseCount[65] * senQtotal * senQtotal;
   // 50mm/40mm：分岐後 → 1口あたり流量で計算
   const loss50 = HCOEFF[50] * hoseCount[50] * Qbranch * Qbranch;
   const loss40 = HCOEFF[40] * hoseCount[40] * Qbranch * Qbranch;
@@ -819,10 +845,16 @@ function calcLoss() {
     '<span><small>50/40mm損失</small><strong>' + (loss50+loss40).toFixed(2) + ' MPa</strong></span>' +
     '<span><small>ノズル圧</small><strong>' + Pnozzle.toFixed(2) + ' MPa</strong></span>';
 
-  // 元ポンプ計算（合計流量 = 1口Q × 先ポンプ放水口数）
+  // 元ポンプ計算（relayOutletsで独立計算）
+  const relayQtotal_L = Q_L * relayOutlets;
+  const relayQ_m3 = relayQtotal_L / 1000;
+  const relayQdispEl = document.getElementById('relayQdisp');
+  if (relayQdispEl) relayQdispEl.textContent = relayQtotal_L;
+  const relayLbl = document.getElementById('relayQlabel');
+  if (relayLbl) relayLbl.textContent = relayQtotal_L;
+
   const checked = document.querySelector('input[name="margin"]:checked');
   const margin = checked ? parseFloat(checked.value) : 0.10;
-  const relayQ_m3 = (Q_L * lossOutlets) / 1000;
   const relayLoss = HCOEFF[65] * relayCount65 * relayQ_m3 * relayQ_m3;
   const relayP = relayLoss + margin;
 
@@ -830,7 +862,7 @@ function calcLoss() {
   document.getElementById('relayDetail').innerHTML =
     '<span><small>中継損失</small><strong>' + relayLoss.toFixed(2) + ' MPa</strong></span>' +
     '<span><small>余裕圧</small><strong>' + margin.toFixed(2) + ' MPa</strong></span>' +
-    '<span><small>合計Q</small><strong>' + Qtotal_L + 'ℓ/min</strong></span>';
+    '<span><small>合計Q</small><strong>' + relayQtotal_L + 'ℓ/min</strong></span>';
 }
 
 // PWA Service Worker
