@@ -1,6 +1,6 @@
 {
-  "name": "ポンプ太郎",
-  "short_name": "ポンプ太郎",
+  "name": "ポンプしば太郎",
+  "short_name": "ポンプしば太郎",
   "description": "静水圧・動水圧からn値（放水可能口数）を即時計算する消防士向けPWA",
   "start_url": "./index.html",
   "display": "standalone",
