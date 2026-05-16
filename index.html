@@ -556,6 +556,13 @@ function nColor(n) {
   return 'red';
 }
 
+// === ヘーゼン・ウィリアムス式によるn値直接計算 ===
+// 早見表と同じ式: n = (P_s / (P_s - P_d))^0.54
+function calcNByFormula(ps, pd) {
+  if (pd >= ps || ps <= 0 || pd < 0) return null;
+  return Math.pow(ps / (ps - pd), 0.54);
+}
+
 // === n値計算 ===
 let currentN = null;
 
@@ -596,15 +603,20 @@ function calc() {
     return;
   }
 
-  const n = lookupN(ps, pd);
+  let n = lookupN(ps, pd);
+  let fromFormula = false;
   if (n === null) {
-    nSub.textContent = '範囲外';
-    nBig.textContent = '？';
-    nBig.className = 'n-big yel';
-    nLbl.textContent = '早見表の範囲外です';
-    rc.className = 'result-card yel';
-    flowSec.style.display = 'none';
-    return;
+    n = calcNByFormula(ps, pd);
+    if (n === null) {
+      nSub.textContent = '範囲外';
+      nBig.textContent = '？';
+      nBig.className = 'n-big yel';
+      nLbl.textContent = '早見表の範囲外です';
+      rc.className = 'result-card yel';
+      flowSec.style.display = 'none';
+      return;
+    }
+    fromFormula = true;
   }
 
   currentN = n;
@@ -622,6 +634,11 @@ function calc() {
     '<span><small>差圧</small><strong>' + diff.toFixed(2) + ' MPa</strong></span>' +
     '<span><small>静水圧</small><strong>' + ps.toFixed(2) + ' MPa</strong></span>' +
     '<span><small>動水圧</small><strong>' + pd.toFixed(2) + ' MPa</strong></span>';
+
+  if (fromFormula) {
+    warn.textContent = '📐 早見表の範囲外のため、ヘーゼン・ウィリアムス式で算出しました';
+    warn.style.display = 'block';
+  }
 
   if (n < 1) {
     warn.textContent = '⚠ 放水可能口数1未満。圧力を確認してください。';
