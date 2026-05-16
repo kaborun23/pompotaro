@@ -519,7 +519,7 @@ const S_VALS = Object.keys(GROUPS).map(Number).sort((a, b) => a - b);
 function interpGroup(sKey, pd) {
   const pts = GROUPS[sKey.toFixed(2)];
   if (!pts) return null;
-  if (pd >= pts[0][0]) return pts[0][1];
+  if (pd > pts[0][0]) return null;  // 動水圧が表の上限を超えている場合は範囲外
   if (pd <= pts[pts.length - 1][0]) return pts[pts.length - 1][1];
   for (let i = 0; i < pts.length - 1; i++) {
     if (pts[i][0] >= pd && pd >= pts[i + 1][0]) {
@@ -532,8 +532,8 @@ function interpGroup(sKey, pd) {
 
 function lookupN(ps, pd) {
   if (pd >= ps || ps <= 0 || pd < 0) return null;
-  if (ps <= S_VALS[0]) return interpGroup(S_VALS[0], pd);
-  if (ps >= S_VALS[S_VALS.length - 1]) return interpGroup(S_VALS[S_VALS.length - 1], pd);
+  // 早見表の範囲外は返さない（クランプせず null を返す）
+  if (ps < S_VALS[0] || ps > S_VALS[S_VALS.length - 1]) return null;
   for (let i = 0; i < S_VALS.length - 1; i++) {
     if (S_VALS[i] <= ps && ps <= S_VALS[i + 1]) {
       const n1 = interpGroup(S_VALS[i], pd);
