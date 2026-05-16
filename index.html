@@ -635,11 +635,6 @@ function calc() {
     '<span><small>静水圧</small><strong>' + ps.toFixed(2) + ' MPa</strong></span>' +
     '<span><small>動水圧</small><strong>' + pd.toFixed(2) + ' MPa</strong></span>';
 
-  if (fromFormula) {
-    warn.textContent = '📐 早見表の範囲外のため、ヘーゼン・ウィリアムス式で算出しました';
-    warn.style.display = 'block';
-  }
-
   if (n < 1) {
     warn.textContent = '⚠ 放水可能口数1未満。圧力を確認してください。';
     warn.style.display = 'block';
