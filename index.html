@@ -440,7 +440,7 @@ td.red{color:var(--red)}
   </div>
   <div class="info-card">
     <h3>🔥 損失圧タブ：ポンプ設定圧力</h3>
-    <p style="margin-bottom:8px">ホース損失率（Haze式）</p>
+    <p style="margin-bottom:8px">ホース損失圧（ヘーゼン・ウィリアムス式）</p>
     <div class="formula">
       65mm（分岐前）：0.137 × N × (Q×口数)²<br>
       50mm（分岐後）：0.365 × N × Q²<br>
@@ -456,9 +456,9 @@ td.red{color:var(--red)}
   </div>
   <div class="info-card">
     <h3>注意事項</h3>
-    <p>本アプリの計算値は「静水圧ｎ値早見表」データに基づく補間値です。実際の放水活動では現場指揮者の判断を優先してください。</p>
+    <p>本アプリのｎ値は「静水圧ｎ値早見表」と同じ計算式（ヘーゼン・ウィリアムス式）で算出しています。実際の放水活動では現場指揮者の判断を優先してください。</p>
     <br>
-    <p style="font-size:12px">対応静水圧範囲：0.30〜0.60 MPa<br>本アプリはオフラインでも動作します</p>
+    <p style="font-size:12px">早見表の掲載範囲：静水圧0.30〜0.60 MPa（計算は範囲外でも可能）<br>本アプリはオフラインでも動作します</p>
   </div>
 </div>
 
@@ -538,9 +538,8 @@ function lookupN(ps, pd) {
     if (S_VALS[i] <= ps && ps <= S_VALS[i + 1]) {
       const n1 = interpGroup(S_VALS[i], pd);
       const n2 = interpGroup(S_VALS[i + 1], pd);
-      if (n1 === null && n2 === null) return null;
-      if (n1 === null) return n2;
-      if (n2 === null) return n1;
+      // 片側でも表の範囲外なら補間せず null（式による計算にフォールバック）
+      if (n1 === null || n2 === null) return null;
       const t = (ps - S_VALS[i]) / (S_VALS[i + 1] - S_VALS[i]);
       return n1 + t * (n2 - n1);
     }
@@ -603,20 +602,17 @@ function calc() {
     return;
   }
 
-  let n = lookupN(ps, pd);
-  let fromFormula = false;
+  // n値は常にヘーゼン・ウィリアムス式で直接計算する
+  // （早見表データは同式から生成されており、表の線形補間より式の方が正確）
+  const n = calcNByFormula(ps, pd);
   if (n === null) {
-    n = calcNByFormula(ps, pd);
-    if (n === null) {
-      nSub.textContent = '範囲外';
-      nBig.textContent = '？';
-      nBig.className = 'n-big yel';
-      nLbl.textContent = '早見表の範囲外です';
-      rc.className = 'result-card yel';
-      flowSec.style.display = 'none';
-      return;
-    }
-    fromFormula = true;
+    nSub.textContent = 'ｎ値';
+    nBig.textContent = '－';
+    nBig.className = 'n-big';
+    nLbl.textContent = '放水可能口数';
+    rc.className = 'result-card';
+    flowSec.style.display = 'none';
+    return;
   }
 
   currentN = n;
