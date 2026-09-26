@@ -1,4 +1,4 @@
-const CACHE = 'firefighter-v5';
+const CACHE = 'firefighter-v6';
 const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
