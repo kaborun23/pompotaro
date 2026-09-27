@@ -1,4 +1,4 @@
-const CACHE = 'firefighter-v6';
+const CACHE = 'firefighter-v1.6';  // index.html フッターの Ver と合わせる
 const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
