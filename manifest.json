@@ -2,7 +2,7 @@
   "name": "ポンプしば太郎",
   "short_name": "ポンプしば太郎",
   "description": "静水圧・動水圧からn値（放水可能口数）を即時計算する消防士向けPWA",
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#1a2a4a",
@@ -14,5 +14,6 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "scope": "./"
 }
