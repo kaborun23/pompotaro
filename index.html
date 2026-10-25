@@ -584,13 +584,14 @@ td.red{color:var(--red)}
 
 <footer style="text-align:center;padding:18px 0 24px;font-size:12px;color:var(--txt2)">
   © 新発田消防本部
-  <div style="font-size:11px;margin-top:4px;opacity:0.8">Ver 1.9（2026.10.23 更新）</div>
+  <div style="font-size:11px;margin-top:4px;opacity:0.8">Ver 2.0（2026.10.25 更新）</div>
 </footer>
 
 <script>
 // === 移転のお知らせ（旧アドレス github.io で開かれたとき） ===
-const NEW_URL = 'https://pompotaro.pages.dev/';
-if (/github\.io$/.test(location.hostname)) {
+const NEW_URL = 'https://ponpu-shibataro.pages.dev/';
+// 旧アドレス：github.io と pompotaro.pages.dev（2026-10-25 に ponpu-shibataro へ再移転）
+if (/github\.io$|(^|\.)pompotaro\.pages\.dev$/.test(location.hostname)) {
   const ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;z-index:999;background:rgba(15,28,48,0.97);display:flex;align-items:center;justify-content:center;padding:24px';
   ov.innerHTML =
@@ -598,7 +599,7 @@ if (/github\.io$/.test(location.hostname)) {
     '<div style="font-size:18px;font-weight:bold;color:var(--acc);margin-bottom:10px">アプリのアドレスが変わりました</div>' +
     '<p style="font-size:14px;color:var(--txt2);margin-bottom:16px">下のボタンから新しいアドレスを開き、<strong style="color:var(--txt)">ホーム画面に追加し直して</strong>ください。<br>今ホーム画面にあるアプリは削除してかまいません。</p>' +
     '<a href="' + NEW_URL + '" style="display:block;background:var(--acc);color:#fff;font-weight:bold;font-size:16px;padding:14px;border-radius:10px;text-decoration:none">新しいアドレスで開く</a>' +
-    '<div style="font-size:12px;color:var(--txt2);margin-top:10px">pompotaro.pages.dev</div>' +
+    '<div style="font-size:12px;color:var(--txt2);margin-top:10px">ponpu-shibataro.pages.dev</div>' +
     '</div>';
   document.body.appendChild(ov);
 }

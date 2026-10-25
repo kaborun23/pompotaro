@@ -1,4 +1,4 @@
-const CACHE = 'firefighter-v1.9';  // index.html フッターの Ver と合わせる
+const CACHE = 'firefighter-v2.0';  // index.html フッターの Ver と合わせる
 // index.html ではなく './' を保存する（Cloudflare Pages は /index.html → / に転送するため）
 const ASSETS = ['./', './manifest.json', './icon.svg'];
 
